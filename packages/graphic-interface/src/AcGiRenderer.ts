@@ -5,7 +5,7 @@ import {
   AcGePoint3d,
   AcGePoint3dLike
 } from '@mlightcad/geometry-engine'
-import { AcGiPointStyle } from 'AcGiPointStyle'
+import { AcGiPointStyle } from './AcGiPointStyle'
 
 import { AcGiEntity } from './AcGiEntity'
 import { AcGiHatchStyle } from './AcGiHatchStyle'

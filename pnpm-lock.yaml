@@ -103,9 +103,18 @@ importers:
 
   packages/data-model:
     dependencies:
+      '@mlightcad/common':
+        specifier: 0.0.1
+        version: link:../common
       '@mlightcad/dxf-json':
         specifier: 1.0.8
         version: 1.0.8
+      '@mlightcad/geometry-engine':
+        specifier: 0.0.1
+        version: link:../geometry-engine
+      '@mlightcad/graphic-interface':
+        specifier: 0.0.1
+        version: link:../graphic-interface
       lodash-es:
         specifier: '*'
         version: 4.17.21
@@ -113,15 +122,6 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
     devDependencies:
-      '@mlightcad/common':
-        specifier: 0.0.1
-        version: link:../common
-      '@mlightcad/geometry-engine':
-        specifier: 0.0.1
-        version: link:../geometry-engine
-      '@mlightcad/graphic-interface':
-        specifier: 0.0.1
-        version: link:../graphic-interface
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12

@@ -1,6 +1,6 @@
 {
   "name": "@mlightcad/data-model",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "keywords": [
     "autocad",
@@ -38,9 +38,12 @@
     "uid": "^2.0.2"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.12"
+  },
+  "peerDependencies": {
     "@mlightcad/common": "0.0.1",
     "@mlightcad/geometry-engine": "0.0.1",
     "@mlightcad/graphic-interface": "0.0.1",
-    "@types/lodash-es": "^4.17.12"
+    "lodash-es": "*"
   }
 }
