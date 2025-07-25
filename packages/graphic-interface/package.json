@@ -1,6 +1,7 @@
 {
   "name": "@mlightcad/graphic-interface",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "license": "MIT",
   "type": "module",
   "keywords": [
     "autocad",
@@ -33,6 +34,6 @@
     "lint:fix": "eslint --fix --quiet src/"
   },
   "peerDependencies": {
-    "@mlightcad/geometry-engine": "0.0.1"
+    "@mlightcad/geometry-engine": "1.0.1"
   }
 }
