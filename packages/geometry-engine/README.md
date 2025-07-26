@@ -164,7 +164,6 @@ const areCollinear = AcGeGeometryUtil.areCollinear(points);
 
 ## Dependencies
 
-- **verb-nurbs-web**: For NURBS curve and surface operations
 - **@mlightcad/common**: For common utilities (peer dependency)
 - **lodash-es**: For utility functions (peer dependency)
 
