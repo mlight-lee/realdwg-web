@@ -1,5 +1,11 @@
 # @mlightcad/data-model
 
+## 1.0.9
+
+### Patch Changes
+
+- update version of data-model package
+
 ## 1.0.7
 
 ### Patch Changes
