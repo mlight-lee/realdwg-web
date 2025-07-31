@@ -1,5 +1,11 @@
 # @mlightcad/geometry-engine
 
+## 1.0.7
+
+### Patch Changes
+
+- fix bug that the last segment of spline is a straight line again
+
 ## 1.0.6
 
 ### Patch Changes

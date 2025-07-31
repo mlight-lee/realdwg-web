@@ -1,5 +1,11 @@
 # @mlightcad/data-model
 
+## 1.0.10
+
+### Patch Changes
+
+- fix bug that the last segment of spline is a straight line again
+
 ## 1.0.9
 
 ### Patch Changes

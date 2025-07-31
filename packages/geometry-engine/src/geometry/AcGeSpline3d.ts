@@ -226,25 +226,23 @@ export class AcGeSpline3d extends AcGeCurve3d {
    * Make the spline closed by adding control points and adjusting knots
    */
   private makeClosed() {
-    const degree = this._nurbsCurve.degree()
-    const originalControlPoints = this._nurbsCurve.controlPoints()
-    const originalKnots = this._nurbsCurve.knots()
-    const originalWeights = this._nurbsCurve.weights()
+    const degree = this._nurbsCurve.degree();
+    const originalControlPoints = this._nurbsCurve.controlPoints();
+    const originalWeights = this._nurbsCurve.weights();
+    const n = originalControlPoints.length;
 
-    // For a proper closed curve, we need to ensure the curve closes at the same point
-    // The key is to create a periodic curve where the end connects smoothly to the beginning
-    const closedControlPoints = [...originalControlPoints]
-    const closedWeights = [...originalWeights]
+    // Append the first 'degree' control points to the end for periodicity
+    const closedControlPoints = [
+      ...originalControlPoints,
+      ...originalControlPoints.slice(0, degree)
+    ];
+    const closedWeights = [
+      ...originalWeights,
+      ...originalWeights.slice(0, degree)
+    ];
 
-    // For a degree 3 curve, we need to add control points that ensure smooth closure
-    // We add the first 'degree' control points at the end to create continuity
-    for (let i = 0; i < degree; i++) {
-      closedControlPoints.push([...originalControlPoints[i]])
-      closedWeights.push(originalWeights[i])
-    }
-
-    // Create a periodic knot vector for the closed curve
-    const closedKnots = this.createClosedKnotVector(originalKnots, degree)
+    // Create a periodic (non-clamped) uniform knot vector
+    const closedKnots = this.createClosedKnotVector(n, degree);
 
     // Create new NURBS curve
     this._nurbsCurve = NurbsCurve.byKnotsControlPointsWeights(
@@ -252,9 +250,9 @@ export class AcGeSpline3d extends AcGeCurve3d {
       closedKnots,
       closedControlPoints,
       closedWeights
-    )
+    );
 
-    this._controlPoints = this.toGePoints(closedControlPoints)
+    this._controlPoints = this.toGePoints(closedControlPoints);
   }
 
   /**
@@ -284,35 +282,17 @@ export class AcGeSpline3d extends AcGeCurve3d {
   }
 
   /**
-   * Create knot vector for closed curve
+   * Create periodic knot vector for closed curve
    */
-  private createClosedKnotVector(
-    originalKnots: number[],
-    degree: number
-  ): number[] {
-    // For a closed curve, we need to create a proper periodic knot vector
-    // that allows the curve to close smoothly
-
-    // Start with the original knots
-    const closedKnots = [...originalKnots]
-
-    // For a closed curve, we need to extend the knot vector
-    // The key is to ensure that the curve can actually close
-    const lastKnot = originalKnots[originalKnots.length - 1]
-    const firstKnot = originalKnots[0]
-
-    // Calculate the knot spacing from the original curve
-    const knotSpacing = (lastKnot - firstKnot) / (originalKnots.length - 1)
-
-    // Add knots for the additional control points
-    // For a closed curve, we need to ensure the curve closes at the same point
-    // We add knots that extend the parameter range appropriately
-    const additionalKnots = degree
-    for (let i = 1; i <= additionalKnots; i++) {
-      closedKnots.push(lastKnot + i * knotSpacing)
+  private createClosedKnotVector(n: number, degree: number): number[] {
+    // For periodic B-spline: knots go from 0 to n (not n+degree+1), no repeated knots at ends
+    // Number of knots = n + 2*degree + 1
+    const m = n + 2 * degree + 1;
+    const knots: number[] = [];
+    for (let i = 0; i < m; i++) {
+      knots.push(i);
     }
-
-    return closedKnots
+    return knots;
   }
 
   /**
@@ -337,7 +317,7 @@ export class AcGeSpline3d extends AcGeCurve3d {
     return new AcGePoint3d(startPoint[0], startPoint[1], startPoint[2])
   }
 
-  /**
+    /**
    * The end point of this spline
    */
   get endPoint(): AcGePoint3d {
@@ -345,7 +325,7 @@ export class AcGeSpline3d extends AcGeCurve3d {
       // For closed splines, the end point should be the same as the start point
       return this.startPoint
     }
-
+    
     const knots = this._nurbsCurve.knots()
     const degree = this._nurbsCurve.degree()
     const endParam = knots[knots.length - degree - 1]
@@ -391,48 +371,39 @@ export class AcGeSpline3d extends AcGeCurve3d {
   }
 
   /**
-   * Divide this spline into the specified nubmer of points
+   * Divide this spline into the specified number of points
    * those points as an array of points.
-   * @param numPoints Input the nubmer of points returned
+   * @param numPoints Input the number of points returned
    * @returns Return an array of point
    */
   getPoints(numPoints: number = 100): AcGePoint3d[] {
-    const curve = this._nurbsCurve
-    const points: AcGePoint3d[] = []
-    // Get the knot vector from the curve
-    const knots = curve.knots()
-
-    // The valid parameter range is between knots[degree] and knots[knots.length - degree - 1]
-    const degree = this._nurbsCurve.degree()
-    const startParam = knots[degree]
-    const endParam = knots[knots.length - degree - 1]
+    const curve = this._nurbsCurve;
+    const points: AcGePoint3d[] = [];
+    const knots = curve.knots();
+    const degree = curve.degree();
+    let startParam = knots[degree];
+    let endParam = knots[knots.length - degree - 1];
 
     if (this._closed) {
-      // For closed splines, ensure the curve closes properly
-      // We need to ensure the first and last points are the same
-      const step = (endParam - startParam) / (numPoints - 1)
-      for (let i = 0; i < numPoints; i++) {
-        let t: number
-        if (i === numPoints - 1) {
-          // For the last point, use the start parameter to ensure closure
-          t = startParam
-        } else {
-          t = startParam + i * step
-        }
-        const point = curve.point(t)
-        points.push(new AcGePoint3d(point[0], point[1], point[2]))
+      // Sample numPoints-1 points, then append the first point to close the loop
+      const period = endParam - startParam;
+      const step = period / (numPoints - 1);
+      for (let i = 0; i < numPoints - 1; i++) {
+        const t = startParam + i * step;
+        const pt = curve.point(t);
+        points.push(new AcGePoint3d(pt[0], pt[1], pt[2]));
       }
+      // Append the first point to close the loop
+      points.push(points[0]);
     } else {
-      // For open splines, use the original logic
-      const step = (endParam - startParam) / (numPoints - 1)
+      const step = (endParam - startParam) / (numPoints - 1);
       for (let i = 0; i < numPoints; i++) {
-        // For the last point, use endParam exactly to avoid floating-point issues
-        const t = i === numPoints - 1 ? endParam : startParam + i * step
-        const point = curve.point(t)
-        points.push(new AcGePoint3d(point[0], point[1], point[2]))
+        const t = i === numPoints - 1 ? endParam : startParam + i * step;
+        const pt = curve.point(t);
+        points.push(new AcGePoint3d(pt[0], pt[1], pt[2]));
       }
     }
-    return points
+    return points;
   }
 
   getCurvePoints(curve: NurbsCurve, count: number) {
