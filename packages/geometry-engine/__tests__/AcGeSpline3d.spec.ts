@@ -573,5 +573,52 @@ describe('AcGeSpline3d', () => {
       expect(startPoint.y).toBeCloseTo(endPoint.y, 6)
       expect(startPoint.z).toBeCloseTo(endPoint.z, 6)
     })
+
+    it('should not create straight line from start to end in closed spline', () => {
+      // Create a spline that should form a curve, not a straight line
+      const controlPoints = [
+        { x: 0, y: 0, z: 0 },
+        { x: 1, y: 2, z: 0 },
+        { x: 2, y: 0, z: 0 },
+        { x: 3, y: 2, z: 0 }
+      ]
+      const knots = [0, 0, 0, 0, 1, 1, 1, 1]
+      const spline = new AcGeSpline3d(controlPoints, knots)
+
+      spline.closed = true
+      const points = spline.getPoints(100)
+
+      // For a closed spline, start and end points should be the same
+      const startPoint = points[0]
+      const endPoint = points[points.length - 1]
+
+      // Verify that start and end points are the same (closed curve)
+      expect(startPoint.x).toBeCloseTo(endPoint.x, 6)
+      expect(startPoint.y).toBeCloseTo(endPoint.y, 6)
+      expect(startPoint.z).toBeCloseTo(endPoint.z, 6)
+
+      // Check that the curve doesn't form a straight line by verifying that
+      // some middle points are not at the same position as the start/end point
+      const midPoint = points[Math.floor(points.length / 2)]
+      const quarterPoint = points[Math.floor(points.length / 4)]
+
+      // Calculate distances from middle points to start point
+      const midDistance = Math.sqrt(
+        Math.pow(midPoint.x - startPoint.x, 2) +
+          Math.pow(midPoint.y - startPoint.y, 2) +
+          Math.pow(midPoint.z - startPoint.z, 2)
+      )
+
+      const quarterDistance = Math.sqrt(
+        Math.pow(quarterPoint.x - startPoint.x, 2) +
+          Math.pow(quarterPoint.y - startPoint.y, 2) +
+          Math.pow(quarterPoint.z - startPoint.z, 2)
+      )
+
+      // The distances should be significant (not a straight line)
+      // This verifies that the curve actually curves and doesn't just stay at the start point
+      expect(midDistance).toBeGreaterThan(0.1)
+      expect(quarterDistance).toBeGreaterThan(0.1)
+    })
   })
 })
