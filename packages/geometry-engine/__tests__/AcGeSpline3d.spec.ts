@@ -584,37 +584,37 @@ describe('AcGeSpline3d', () => {
       ]
       const knots = [0, 0, 0, 0, 1, 1, 1, 1]
       const spline = new AcGeSpline3d(controlPoints, knots)
-      
+
       spline.closed = true
       const points = spline.getPoints(100)
-      
+
       // For a closed spline, start and end points should be the same
       const startPoint = points[0]
       const endPoint = points[points.length - 1]
-      
+
       // Verify that start and end points are the same (closed curve)
       expect(startPoint.x).toBeCloseTo(endPoint.x, 6)
       expect(startPoint.y).toBeCloseTo(endPoint.y, 6)
       expect(startPoint.z).toBeCloseTo(endPoint.z, 6)
-      
+
       // Check that the curve doesn't form a straight line by verifying that
       // some middle points are not at the same position as the start/end point
       const midPoint = points[Math.floor(points.length / 2)]
       const quarterPoint = points[Math.floor(points.length / 4)]
-      
+
       // Calculate distances from middle points to start point
       const midDistance = Math.sqrt(
         Math.pow(midPoint.x - startPoint.x, 2) +
-        Math.pow(midPoint.y - startPoint.y, 2) +
-        Math.pow(midPoint.z - startPoint.z, 2)
+          Math.pow(midPoint.y - startPoint.y, 2) +
+          Math.pow(midPoint.z - startPoint.z, 2)
       )
-      
+
       const quarterDistance = Math.sqrt(
         Math.pow(quarterPoint.x - startPoint.x, 2) +
-        Math.pow(quarterPoint.y - startPoint.y, 2) +
-        Math.pow(quarterPoint.z - startPoint.z, 2)
+          Math.pow(quarterPoint.y - startPoint.y, 2) +
+          Math.pow(quarterPoint.z - startPoint.z, 2)
       )
-      
+
       // The distances should be significant (not a straight line)
       // This verifies that the curve actually curves and doesn't just stay at the start point
       expect(midDistance).toBeGreaterThan(0.1)
@@ -632,44 +632,49 @@ describe('AcGeSpline3d', () => {
         { x: 252.86698763334, y: 155.22184461437, z: 0 }
       ]
       const spline = new AcGeSpline3d(fitPoints, 'Uniform')
-      
+
       spline.closed = true
       const points = spline.getPoints(100)
-      
+
       // Check that the last few points don't form a straight line
       const lastPoint = points[points.length - 1]
       const secondToLastPoint = points[points.length - 2]
       const thirdToLastPoint = points[points.length - 3]
-      
+
       // Calculate the vector from third-to-last to second-to-last point
       const vector1 = {
         x: secondToLastPoint.x - thirdToLastPoint.x,
         y: secondToLastPoint.y - thirdToLastPoint.y,
         z: secondToLastPoint.z - thirdToLastPoint.z
       }
-      
+
       // Calculate the vector from second-to-last to last point
       const vector2 = {
         x: lastPoint.x - secondToLastPoint.x,
         y: lastPoint.y - secondToLastPoint.y,
         z: lastPoint.z - secondToLastPoint.z
       }
-      
+
       // Calculate the angle between these vectors
-      const dotProduct = vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z
-      const magnitude1 = Math.sqrt(vector1.x * vector1.x + vector1.y * vector1.y + vector1.z * vector1.z)
-      const magnitude2 = Math.sqrt(vector2.x * vector2.x + vector2.y * vector2.y + vector2.z * vector2.z)
-      
+      const dotProduct =
+        vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z
+      const magnitude1 = Math.sqrt(
+        vector1.x * vector1.x + vector1.y * vector1.y + vector1.z * vector1.z
+      )
+      const magnitude2 = Math.sqrt(
+        vector2.x * vector2.x + vector2.y * vector2.y + vector2.z * vector2.z
+      )
+
       // Avoid division by zero
       if (magnitude1 > 0 && magnitude2 > 0) {
         const cosAngle = dotProduct / (magnitude1 * magnitude2)
         const angle = Math.acos(Math.max(-1, Math.min(1, cosAngle)))
-        
+
         // The angle should not be close to 0 or 180 degrees (not a straight line)
         expect(angle).toBeGreaterThan(0.1)
         expect(angle).toBeLessThan(Math.PI - 0.1)
       }
-      
+
       // Also verify that start and end points are the same
       const startPoint = points[0]
       expect(startPoint.x).toBeCloseTo(lastPoint.x, 6)

@@ -226,23 +226,23 @@ export class AcGeSpline3d extends AcGeCurve3d {
    * Make the spline closed by adding control points and adjusting knots
    */
   private makeClosed() {
-    const degree = this._nurbsCurve.degree();
-    const originalControlPoints = this._nurbsCurve.controlPoints();
-    const originalWeights = this._nurbsCurve.weights();
-    const n = originalControlPoints.length;
+    const degree = this._nurbsCurve.degree()
+    const originalControlPoints = this._nurbsCurve.controlPoints()
+    const originalWeights = this._nurbsCurve.weights()
+    const n = originalControlPoints.length
 
     // Append the first 'degree' control points to the end for periodicity
     const closedControlPoints = [
       ...originalControlPoints,
       ...originalControlPoints.slice(0, degree)
-    ];
+    ]
     const closedWeights = [
       ...originalWeights,
       ...originalWeights.slice(0, degree)
-    ];
+    ]
 
     // Create a periodic (non-clamped) uniform knot vector
-    const closedKnots = this.createClosedKnotVector(n, degree);
+    const closedKnots = this.createClosedKnotVector(n, degree)
 
     // Create new NURBS curve
     this._nurbsCurve = NurbsCurve.byKnotsControlPointsWeights(
@@ -250,9 +250,9 @@ export class AcGeSpline3d extends AcGeCurve3d {
       closedKnots,
       closedControlPoints,
       closedWeights
-    );
+    )
 
-    this._controlPoints = this.toGePoints(closedControlPoints);
+    this._controlPoints = this.toGePoints(closedControlPoints)
   }
 
   /**
@@ -287,12 +287,12 @@ export class AcGeSpline3d extends AcGeCurve3d {
   private createClosedKnotVector(n: number, degree: number): number[] {
     // For periodic B-spline: knots go from 0 to n (not n+degree+1), no repeated knots at ends
     // Number of knots = n + 2*degree + 1
-    const m = n + 2 * degree + 1;
-    const knots: number[] = [];
+    const m = n + 2 * degree + 1
+    const knots: number[] = []
     for (let i = 0; i < m; i++) {
-      knots.push(i);
+      knots.push(i)
     }
-    return knots;
+    return knots
   }
 
   /**
@@ -317,7 +317,7 @@ export class AcGeSpline3d extends AcGeCurve3d {
     return new AcGePoint3d(startPoint[0], startPoint[1], startPoint[2])
   }
 
-    /**
+  /**
    * The end point of this spline
    */
   get endPoint(): AcGePoint3d {
@@ -325,7 +325,7 @@ export class AcGeSpline3d extends AcGeCurve3d {
       // For closed splines, the end point should be the same as the start point
       return this.startPoint
     }
-    
+
     const knots = this._nurbsCurve.knots()
     const degree = this._nurbsCurve.degree()
     const endParam = knots[knots.length - degree - 1]
@@ -377,33 +377,33 @@ export class AcGeSpline3d extends AcGeCurve3d {
    * @returns Return an array of point
    */
   getPoints(numPoints: number = 100): AcGePoint3d[] {
-    const curve = this._nurbsCurve;
-    const points: AcGePoint3d[] = [];
-    const knots = curve.knots();
-    const degree = curve.degree();
-    let startParam = knots[degree];
-    let endParam = knots[knots.length - degree - 1];
+    const curve = this._nurbsCurve
+    const points: AcGePoint3d[] = []
+    const knots = curve.knots()
+    const degree = curve.degree()
+    const startParam = knots[degree]
+    const endParam = knots[knots.length - degree - 1]
 
     if (this._closed) {
       // Sample numPoints-1 points, then append the first point to close the loop
-      const period = endParam - startParam;
-      const step = period / (numPoints - 1);
+      const period = endParam - startParam
+      const step = period / (numPoints - 1)
       for (let i = 0; i < numPoints - 1; i++) {
-        const t = startParam + i * step;
-        const pt = curve.point(t);
-        points.push(new AcGePoint3d(pt[0], pt[1], pt[2]));
+        const t = startParam + i * step
+        const pt = curve.point(t)
+        points.push(new AcGePoint3d(pt[0], pt[1], pt[2]))
       }
       // Append the first point to close the loop
-      points.push(points[0]);
+      points.push(points[0])
     } else {
-      const step = (endParam - startParam) / (numPoints - 1);
+      const step = (endParam - startParam) / (numPoints - 1)
       for (let i = 0; i < numPoints; i++) {
-        const t = i === numPoints - 1 ? endParam : startParam + i * step;
-        const pt = curve.point(t);
-        points.push(new AcGePoint3d(pt[0], pt[1], pt[2]));
+        const t = i === numPoints - 1 ? endParam : startParam + i * step
+        const pt = curve.point(t)
+        points.push(new AcGePoint3d(pt[0], pt[1], pt[2]))
       }
     }
-    return points;
+    return points
   }
 
   getCurvePoints(curve: NurbsCurve, count: number) {
