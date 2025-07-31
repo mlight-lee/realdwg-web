@@ -1,5 +1,11 @@
 # @mlightcad/geometry-engine
 
+## 1.0.6
+
+### Patch Changes
+
+- avoid creating one straight line from end point to start point when spline is closed
+
 ## 1.0.5
 
 ### Patch Changes
