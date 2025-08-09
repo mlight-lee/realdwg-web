@@ -329,7 +329,12 @@ export class AcCmColor {
     return this._colorIndex
   }
   /**
-   * Sets the AutoCAD color index value.
+   * Sets the AutoCAD color index value. If value less than 0 is set, 0 will be used. If value greater than
+   * 256 is set, 256 will be used.
+   * - 0 indicates that the entity uses the color of the BlockReference that's displaying it. If the entity
+   * is not displayed through a block reference (for example, it is directly owned by the model space
+   * block table record) and its color is 0, then it will display as though its color were 7.
+   * - 256 indicates that the entity uses the color specified in the layer table record it references.
    * 
    * @param {number | null} value - The color index to set (0-256).
    */
