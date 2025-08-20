@@ -43,6 +43,6 @@
   },
   "peerDependencies": {
     "@mlightcad/data-model": "workspace:*",
-    "@mlightcad/libredwg-web": "0.1.5"
+    "@mlightcad/libredwg-web": "0.1.6"
   }
 }
