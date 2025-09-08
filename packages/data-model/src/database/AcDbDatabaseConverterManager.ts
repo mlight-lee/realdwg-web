@@ -1,6 +1,5 @@
 import { AcCmEventManager } from '@mlightcad/common'
 
-import { AcDbDxfConverter } from '../converter'
 import { AcDbDatabaseConverter } from './AcDbDatabaseConverter'
 
 /**
@@ -106,7 +105,6 @@ export class AcDbDatabaseConverterManager {
    */
   private constructor() {
     this._converters = new Map()
-    this.register(AcDbFileType.DXF, new AcDbDxfConverter())
   }
 
   /**

@@ -23,13 +23,13 @@
     "README.md",
     "package.json"
   ],
-  "main": "./dist/data-model.umd.cjs",
+  "main": "./dist/data-model.cjs",
   "module": "./dist/data-model.js",
   "types": "./lib/index.d.ts",
   "exports": {
     "types": "./lib/index.d.ts",
     "import": "./dist/data-model.js",
-    "require": "./dist/data-model.umd.cjs"
+    "require": "./dist/data-model.cjs"
   },
   "scripts": {
     "analyze": "vite build --mode analyze",
