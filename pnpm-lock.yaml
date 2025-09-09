@@ -112,6 +112,15 @@ importers:
         specifier: workspace:*
         version: link:../graphic-interface
 
+  packages/dxf-converter:
+    dependencies:
+      '@mlightcad/data-model':
+        specifier: workspace:*
+        version: link:../data-model
+      '@mlightcad/dxf-json':
+        specifier: 1.0.8
+        version: 1.0.8
+
   packages/geometry-engine:
     dependencies:
       '@mlightcad/common':

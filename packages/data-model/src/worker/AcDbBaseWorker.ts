@@ -5,12 +5,12 @@
 
 /// <reference lib="webworker" />
 
-export interface WorkerMessage<TInput = unknown> {
+export interface AcDbWorkerMessage<TInput = unknown> {
   id: string
   input: TInput
 }
 
-export interface WorkerResponse<TOutput = unknown> {
+export interface AcDbWorkerResponse<TOutput = unknown> {
   id: string
   success: boolean
   data?: TOutput
@@ -30,14 +30,19 @@ export abstract class AcDbBaseWorker<TInput = unknown, TOutput = unknown> {
    * Set up message handler - called automatically
    */
   private setupMessageHandler(): void {
-    self.onmessage = async (event: MessageEvent<WorkerMessage<TInput>>) => {
+    self.onmessage = async (event: MessageEvent<AcDbWorkerMessage<TInput>>) => {
       const { id, input } = event.data
 
       try {
         const result = await this.executeTask(input)
         this.sendResponse(id, true, result)
       } catch (error) {
-        this.sendResponse(id, false, undefined, error instanceof Error ? error.message : String(error))
+        this.sendResponse(
+          id,
+          false,
+          undefined,
+          error instanceof Error ? error.message : String(error)
+        )
       }
     }
   }
@@ -45,14 +50,19 @@ export abstract class AcDbBaseWorker<TInput = unknown, TOutput = unknown> {
   /**
    * Send response back to main thread
    */
-  private sendResponse(id: string, success: boolean, data?: TOutput, error?: string): void {
-    const response: WorkerResponse<TOutput> = {
+  private sendResponse(
+    id: string,
+    success: boolean,
+    data?: TOutput,
+    error?: string
+  ): void {
+    const response: AcDbWorkerResponse<TOutput> = {
       id,
       success,
       data,
       error
     }
-    
+
     self.postMessage(response)
   }
 

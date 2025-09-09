@@ -286,9 +286,9 @@ export interface AcDbDatabaseConverterConfig {
  *   protected parse(data: string | ArrayBuffer): MyModel {
  *     // Implementation for parsing data
  *   }
- *   
+ *
  *   ......
- * 
+ *
  *   protected processEntities(model: MyModel, db: AcDbDatabase) {
  *     // Implementation for processing entities
  *   }
@@ -611,7 +611,10 @@ export abstract class AcDbDatabaseConverter<TModel = unknown> {
     }
   }
 
-  protected async parse(_data: string | ArrayBuffer, _workerUrl?: string): Promise<TModel | undefined> {
+  protected async parse(
+    _data: string | ArrayBuffer,
+    _workerUrl?: string
+  ): Promise<TModel | undefined> {
     throw new Error('Not impelemented yet!')
   }
 

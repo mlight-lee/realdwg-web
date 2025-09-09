@@ -1,0 +1,45 @@
+{
+  "name": "@mlightcad/dxf-converter",
+  "version": "1.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mlight-lee/realdwg-web"
+  },
+  "keywords": [
+    "autocad",
+    "cad",
+    "dwg",
+    "dxf",
+    "mlight",
+    "mlightcad",
+    "objecarx",
+    "realdwg"
+  ],
+  "files": [
+    "dist",
+    "lib",
+    "README.md",
+    "package.json"
+  ],
+  "main": "./dist/dxf-converter.umd.cjs",
+  "module": "./dist/dxf-converter.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    "types": "./lib/index.d.ts",
+    "import": "./dist/dxf-converter.js",
+    "require": "./dist/dxf-converter.umd.cjs"
+  },
+  "scripts": {
+    "clean": "rimraf dist lib tsconfig.tsbuildinfo",
+    "build": "tsc && vite build",
+    "lint": "eslint src/",
+    "lint:fix": "eslint --fix --quiet src/"
+  },
+  "dependencies": {
+    "@mlightcad/dxf-json": "1.0.8"
+  },
+  "peerDependencies": {
+    "@mlightcad/data-model": "workspace:*"
+  }
+}

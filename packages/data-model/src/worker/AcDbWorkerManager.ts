@@ -32,11 +32,14 @@ export class AcDbWorkerManager {
   private config: Required<AcDbWorkerConfig>
   private taskId = 0
   private workers = new Map<string, AcDbWorkerInstance>()
-  private pendingTasks = new Map<string, {
-    resolve: (value: AcDbWorkerResult) => void
-    reject: (error: Error) => void
-    timeout: NodeJS.Timeout
-  }>()
+  private pendingTasks = new Map<
+    string,
+    {
+      resolve: (value: AcDbWorkerResult) => void
+      reject: (error: Error) => void
+      timeout: NodeJS.Timeout
+    }
+  >()
 
   constructor(config: AcDbWorkerConfig) {
     this.config = {
@@ -58,8 +61,8 @@ export class AcDbWorkerManager {
 
     try {
       return await this.executeInWorker(
-        taskId, 
-        input, 
+        taskId,
+        input,
         workerUrl || this.config.workerUrl
       )
     } catch (error) {
@@ -90,17 +93,19 @@ export class AcDbWorkerManager {
       const timeout = setTimeout(() => {
         this.cleanupTask(taskId)
         this.releaseWorker(worker)
-        reject(new Error(`Worker operation timed out after ${this.config.timeout}ms`))
+        reject(
+          new Error(`Worker operation timed out after ${this.config.timeout}ms`)
+        )
       }, this.config.timeout)
 
       // Store task
       this.pendingTasks.set(taskId, {
-        resolve: (result) => {
+        resolve: result => {
           clearTimeout(timeout)
           this.releaseWorker(worker)
           resolve(result as AcDbWorkerResult<TOutput>)
         },
-        reject: (error) => {
+        reject: error => {
           clearTimeout(timeout)
           this.releaseWorker(worker)
           reject(error)
@@ -199,9 +204,10 @@ export class AcDbWorkerManager {
     }
 
     // Reuse oldest worker
-    const oldestWorker = Array.from(this.workers.values())
-      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0]
-    
+    const oldestWorker = Array.from(this.workers.values()).sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+    )[0]
+
     oldestWorker.isBusy = true
     return oldestWorker.worker
   }
@@ -231,7 +237,8 @@ export class AcDbWorkerManager {
   getStats() {
     return {
       totalWorkers: this.workers.size,
-      busyWorkers: Array.from(this.workers.values()).filter(w => w.isBusy).length,
+      busyWorkers: Array.from(this.workers.values()).filter(w => w.isBusy)
+        .length,
       pendingTasks: this.pendingTasks.size,
       config: this.config
     }
