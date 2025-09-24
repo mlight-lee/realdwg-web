@@ -1,5 +1,13 @@
 # @mlightcad/libdxfrw-converter
 
+## 3.0.12
+
+### Patch Changes
+
+- feat: add one flag to delay creating one rendered entity in function AcDbEntity.draw
+- Updated dependencies
+  - @mlightcad/data-model@1.2.12
+
 ## 3.0.11
 
 ### Patch Changes

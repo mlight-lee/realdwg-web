@@ -1,5 +1,11 @@
 # @mlightcad/data-model
 
+## 1.2.12
+
+### Patch Changes
+
+- feat: add one flag to delay creating one rendered entity in function AcDbEntity.draw
+
 ## 1.2.11
 
 ### Patch Changes
